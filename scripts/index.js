@@ -21,6 +21,7 @@ const btnProfileSave = profilePopup.querySelector(".popup__button");
 // Функция окрытия окна
 function openModal(popup) {
   popup.classList.add("popup_is-opened");
+  popup.classList.add('popup_is-animated')
 }
 // Функция закрытия окна
 function closeModal(popup) {
