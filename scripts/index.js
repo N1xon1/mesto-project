@@ -21,10 +21,16 @@ const btnProfileSave = profilePopup.querySelector(".popup__button");
 // Функция окрытия окна
 function openModal(popup) {
   popup.classList.add("popup_is-opened");
+  popup.classList.add("popup_is-animated");
 }
 // Функция закрытия окна
 function closeModal(popup) {
   popup.classList.remove("popup_is-opened");
+}
+// Функция оздание и настройка картинок
+function setImageAttributes(img, link, name) {
+  img.setAttribute("src", link);
+  img.setAttribute("alt", `Фото ${name}`);
 }
 
 // Открытие и закрытие формы для добавления карточек
@@ -34,16 +40,16 @@ const btnCardSave = cardPopup.querySelector(".popup__button");
 btnCardOpen.addEventListener("click", () => openModal(cardPopup));
 btnCardClose.addEventListener("click", () => closeModal(cardPopup));
 // Добавления новых карточек пользователем
-const CardSave = cardPopup.querySelector(".popup__form");
+const cardSave = cardPopup.querySelector(".popup__form");
 const cardName = cardPopup.querySelector(".popup__input_type_card-name");
 const cardUrl = cardPopup.querySelector(".popup__input_type_url");
 function handleCardFormSubmit(evt) {
   evt.preventDefault();
   createCard(cardName.value, cardUrl.value, true);
-  CardSave.reset();
+  cardSave.reset();
   closeModal(cardPopup);
 }
-CardSave.addEventListener("submit", handleCardFormSubmit);
+cardSave.addEventListener("submit", handleCardFormSubmit);
 
 // Перебор массива с данными
 initialCards.forEach(function (elem) {
@@ -54,20 +60,19 @@ const popupImg = imagePopup.querySelector(".popup__image");
 const popupCaption = imagePopup.querySelector(".popup__caption");
 function createCard(name, link, isUserCard) {
   const item = template.content.cloneNode(true);
-  const img = item.querySelector(".card__image");
-  const title = item.querySelector(".card__title");
-  const btnImgClose = imagePopup.querySelector(".popup__close");
-  img.setAttribute("src", link);
-  img.setAttribute("alt", `Фото ${name}`);
+  let img = item.querySelector(".card__image");
+  let title = item.querySelector(".card__title");
+  setImageAttributes(img, link, name)
   title.textContent = name;
 
   // Функция открытия и закрытия поп-апа с картинкой
   img.addEventListener("click", () => {
-    popupImg.setAttribute("src", link);
-    popupImg.setAttribute("alt", `Фото ${name}`);
+    setImageAttributes(popupImg, link, name)
     popupCaption.textContent = name;
     openModal(imagePopup);
   });
+  // Функция закрытия изображения карточки
+  const btnImgClose = imagePopup.querySelector(".popup__close");
   btnImgClose.addEventListener("click", () => closeModal(imagePopup));
   // Функция «Лайк» для всех карточек
   const btnCardLikes = item.querySelector(".card__like-button");
@@ -77,7 +82,7 @@ function createCard(name, link, isUserCard) {
   // Функция удаления карточки
   const btnCardDelete = item.querySelector(".card__delete-button");
   btnCardDelete.addEventListener("click", () => {
-    const card = btnCardDelete.closest(".places__item ");
+    const card = btnCardDelete.closest(".places__item");
     return card.remove();
   });
 
