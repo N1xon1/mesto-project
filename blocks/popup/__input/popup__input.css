@@ -10,6 +10,21 @@
   margin-bottom: 10px;
 }
 
+.popup__input_type_error {
+  border-bottom-color: red;
+} 
+
+.popup__input-error {
+  display: none; /* Скрыть текст ошибки по умолчанию */
+  color: red; /* Красный цвет текста ошибки */
+  font-size: 13px; /* Размер шрифта для текста ошибки */
+  margin-top: 4px; /* Отступ сверху */
+}
+
+.popup__input-error_active {
+  display: block; /* Показываем ошибку, когда класс активен */
+}
+
 .popup__input:last-of-type {
   margin-bottom: 0;
 }
@@ -20,3 +35,4 @@
     line-height: 15px;
   }
 }
+

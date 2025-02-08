@@ -10,11 +10,8 @@ const btnProfileClose = profilePopup.querySelector(".popup__close");
 
 const titleProfilePopup = profilePopup.querySelector(".popup__input_type_name");
 const titleProfile = document.querySelector(".profile__title");
-const descripProfilePopup = profilePopup.querySelector(
-  ".popup__input_type_description"
-);
+const descripProfilePopup = profilePopup.querySelector(".popup__input_type_description");
 const descripProfile = document.querySelector(".profile__description");
-
 const profileFormElement = profilePopup.querySelector(".popup__form");
 const btnProfileSave = profilePopup.querySelector(".popup__button");
 
@@ -43,12 +40,20 @@ btnCardClose.addEventListener("click", () => closeModal(cardPopup));
 const cardSave = cardPopup.querySelector(".popup__form");
 const cardName = cardPopup.querySelector(".popup__input_type_card-name");
 const cardUrl = cardPopup.querySelector(".popup__input_type_url");
+// Состояние кнопки до создания карточки
 function handleCardFormSubmit(evt) {
   evt.preventDefault();
   createCard(cardName.value, cardUrl.value, true);
   cardSave.reset();
   closeModal(cardPopup);
+  toggleButtonState(Array.from(cardPopup.querySelectorAll('.popup__input')), btnCardSave);
 }
+
+console.log(cardSave.querySelector('.popup_is-opened'))
+// if (cardSave.querySelector('.popup_is-opened')) {
+//   const overlay = document.querySelector('.content');
+//   overlay.addEventListener('click', () => closeModal(cardPopup));
+// }
 cardSave.addEventListener("submit", handleCardFormSubmit);
 
 // Перебор массива с данными
@@ -98,14 +103,80 @@ titleProfilePopup.value = titleProfile.textContent;
 descripProfilePopup.value = descripProfile.textContent;
 // Обработчик события открытия окна редактирования профиля
 btnProfileOpen.addEventListener("click", () => openModal(profilePopup));
-// Сохранение изменений профиля
-function handleProfileFormSubmit(evt) {
-  evt.preventDefault();
-  titleProfile.textContent = titleProfilePopup.value;
-  descripProfile.textContent = descripProfilePopup.value;
-  closeModal(profilePopup);
-}
-profileFormElement.addEventListener("submit", handleProfileFormSubmit);
 
+// Функция обработки отправки формы
+function handleProfileFormSubmit(evt) {
+    evt.preventDefault(); 
+    titleProfile.textContent = titleProfilePopup.value;
+    descripProfile.textContent = descripProfilePopup.value;
+    closeModal(profilePopup);
+
+}
+profilePopup.addEventListener('submit', handleProfileFormSubmit)
 // Обработчик события закрытия окна редактирования профиля
 btnProfileClose.addEventListener("click", () => closeModal(profilePopup));
+
+// Функция перебора form
+function enableValidation() {
+  const formList = Array.from(document.querySelectorAll('.popup__form'))
+  formList.forEach((formElement) => {
+    setEventListeners(formElement);
+  })
+}
+enableValidation();
+
+// Функция перебора input-form
+function setEventListeners(formElement) {
+  const  inputList = Array.from(formElement.querySelectorAll('.popup__input'))
+  const buttonElement = formElement.querySelector('.popup__button'); 
+  if (formElement==cardSave) {
+    toggleButtonState(inputList, buttonElement);
+  }
+  inputList.forEach((inputElement) => {
+      inputElement.addEventListener('input', function () {
+        checkInputValidity(formElement, inputElement);
+        toggleButtonState(inputList, buttonElement);
+      });
+  });
+};
+
+// Функция показа ошибки валидации
+function showInputError(formElement, inputElement, errorMessage) {
+  const errorElement = formElement.querySelector(`.${inputElement.id}-error`);
+  inputElement.classList.add('popup__input_type_error');
+  errorElement.textContent = errorMessage;
+  errorElement.classList.add('popup__input-error_active');
+}
+// Функция скрытия ошибки валидации
+function hideInputError(formElement, inputElement,) {
+  const errorElement = formElement.querySelector(`.${inputElement.id}-error`);
+  inputElement.classList.remove('popup__input_type_error');
+  errorElement.classList.remove('popup__input-error_active');
+  errorElement.textContent = '';
+}
+
+// Функция для проверки валидности формы
+const checkInputValidity = (formElement, inputElement) => {
+  if (!inputElement.validity.valid) {
+    showInputError(formElement, inputElement, inputElement.validationMessage);
+  } else {
+    hideInputError(formElement, inputElement);
+  }
+};
+
+// Функция проверки полей на валидность
+function hasInvalidInput(inputList) {
+  return inputList.some((inputElement) => {
+    return !inputElement.validity.valid;
+  });
+};
+// Функция выключения кнопки
+function toggleButtonState(inputList, buttonElement) {
+  if (hasInvalidInput(inputList)) {  // Если есть хотя бы одно невалидное поле
+    buttonElement.classList.add('popup__button-disabled');
+    buttonElement.disabled = true;
+  } else {  // Если все поля валидны
+    buttonElement.classList.remove('popup__button-disabled');
+    buttonElement.disabled = false;
+  }
+}
