@@ -19,16 +19,19 @@ const btnProfileSave = profilePopup.querySelector(".popup__button");
 function openModal(popup) {
   popup.classList.add("popup_is-opened");
   popup.classList.add("popup_is-animated");
+  document.addEventListener('keydown', closeByEsc); 
 }
 // Функция закрытия окна
 function closeModal(popup) {
   popup.classList.remove("popup_is-opened");
+  document.removeEventListener('keydown', closeByEsc); 
 }
 // Функция оздание и настройка картинок
 function setImageAttributes(img, link, name) {
   img.setAttribute("src", link);
   img.setAttribute("alt", `Фото ${name}`);
 }
+
 
 // Открытие и закрытие формы для добавления карточек
 const btnCardOpen = document.querySelector(".profile__add-button");
@@ -48,12 +51,6 @@ function handleCardFormSubmit(evt) {
   closeModal(cardPopup);
   toggleButtonState(Array.from(cardPopup.querySelectorAll('.popup__input')), btnCardSave);
 }
-
-console.log(cardSave.querySelector('.popup_is-opened'))
-// if (cardSave.querySelector('.popup_is-opened')) {
-//   const overlay = document.querySelector('.content');
-//   overlay.addEventListener('click', () => closeModal(cardPopup));
-// }
 cardSave.addEventListener("submit", handleCardFormSubmit);
 
 // Перебор массива с данными
@@ -118,7 +115,7 @@ btnProfileClose.addEventListener("click", () => closeModal(profilePopup));
 
 // Функция перебора form
 function enableValidation() {
-  const formList = Array.from(document.querySelectorAll('.popup__form'))
+  const formList = Array.from(document.querySelectorAll('.popup__form'));
   formList.forEach((formElement) => {
     setEventListeners(formElement);
   })
@@ -179,4 +176,23 @@ function toggleButtonState(inputList, buttonElement) {
     buttonElement.classList.remove('popup__button-disabled');
     buttonElement.disabled = false;
   }
+}
+
+// Функция закрытия popap через overlay
+const CloseByOverlay = (evt, popup) => {
+  if (evt.currentTarget === evt.target) {
+    closeModal(popup)
+  }
+}
+
+cardPopup.addEventListener("click", (evt) => CloseByOverlay(evt, cardPopup));
+profilePopup.addEventListener("click", (evt) => CloseByOverlay(evt, profilePopup));
+imagePopup.addEventListener("click", (evt) => CloseByOverlay(evt, imagePopup));
+
+// Функция закрытия popap через Esc
+function closeByEsc(evt) {
+  if (evt.key === 'Escape') {
+    const openedPopup = document.querySelector('.popup_is-opened');       
+    closeModal(openedPopup);
+  } 
 }
